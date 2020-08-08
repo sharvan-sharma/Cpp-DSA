@@ -49,7 +49,8 @@ void LinkedList<T>::Append(T v){
     //add data to that Node using the pointer npt(stored in stack)
     npt->data = v;
 
-    //if end is not NULL than add npt to Node's next which is pointed by end and update the end pointer to npt
+    //if end is not NULL than add npt to Node's next which is pointed by end 
+    //and update the end pointer to npt
     if(end){
         end->next = npt;
         end = npt;
