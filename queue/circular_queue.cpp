@@ -28,6 +28,8 @@ int CircularQueue<T>::enqueue(T v){
         rear++;
         arr[rear] = v; 
         return 1;
+    }else if(front == -1 && rear == (size-1)){
+        return 0;
     }else if(((rear+1)%size) != (front%size)){
         rear++;
         rear = rear%size;
