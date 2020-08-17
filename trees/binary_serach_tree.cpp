@@ -167,6 +167,86 @@ void postorder(Node<T> *node_pointer){
     }
 }
 
+//Queue  node class
+template <class N>
+class Queue_Node{
+    public:
+        N value;
+        Queue_Node *next;
+        Queue_Node(){
+            next = NULL;
+        }
+};
+
+// queue class
+template <class N>
+class Queue{
+    public:
+        Queue_Node<N> *head,*tail;
+        Queue(){
+            head = NULL;
+            tail = NULL;
+        }
+        void enqueue(Queue_Node<N> *pointer);
+        N dequeue();
+};
+
+template <class N>
+void Queue<N>::enqueue(Queue_Node<N> *pointer){
+    if(tail){
+        tail->next = pointer;
+        tail = pointer;
+    }else{
+        head = tail = pointer;
+    }
+}
+
+template <class N>
+N Queue<N>::dequeue(){
+    if(head){
+        if(head && head == tail){
+            N pointer = head->value;
+            head = tail = NULL;
+            return pointer;
+        }else{
+            N pointer = head->value;
+            head = head->next;
+            return pointer;
+        }
+    }
+    return NULL;
+}
+
+template <class T>
+void levelorder(Node<T> *node_pointer){
+    if(node_pointer){
+        Queue<Node<T> *> *queue = new Queue<Node<T> *>;
+
+        Queue_Node<Node<T> *> *queue_node = new Queue_Node<Node<T> *>;
+
+        queue_node->value = node_pointer;
+        queue->enqueue(queue_node);
+
+        while(queue->head){
+            
+            Node<T> *pointer = queue->dequeue();
+
+            cout << pointer->value << " ";
+
+            if(pointer->lchild){
+                Queue_Node<Node<T> *> *queue_node = new Queue_Node<Node<T> *>;
+                queue_node->value = pointer->lchild;
+                queue->enqueue(queue_node);
+            }
+
+            if(pointer->rchild){
+                Queue_Node<Node<T> *> *queue_node = new Queue_Node<Node<T> *>;
+                queue_node->value = pointer->rchild;
+                queue->enqueue(queue_node);
+            }
+        }
+    }
+}
 
 int main(){
 
@@ -196,6 +276,8 @@ int main(){
     inorder(tree->root);
     cout  << endl << "postorder -"<< endl;
     postorder(tree->root);
+    cout  << endl << "levelorder -"<< endl;
+    levelorder(tree->root);
     
     //serach
     cout.setf(ios::boolalpha);
