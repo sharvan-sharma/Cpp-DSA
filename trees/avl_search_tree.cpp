@@ -143,9 +143,89 @@ void AVL<T>::add_node(Node<T> *parent,Node<T> *node_pointer){
 
 }
 
+
+// left nearest neighbor of node
+template <class T>
+Node<T> * find_left_nearest(Node<T> * pointer){
+    while(pointer->rchild){
+        pointer = pointer->rchild;
+    }
+    return pointer;
+}
+
+// right nearest neighbor of node
+template <class T>
+Node<T> * find_right_nearest(Node<T> * pointer){
+    while(pointer->lchild){
+        pointer = pointer->lchild;
+    }
+    return pointer;
+}
+
 template <class T>
 void AVL<T>::delete_node(T query){
-return;
+        Node<T> *pointer,*tail_pointer;
+        pointer = root;
+        tail_pointer = NULL;
+        while(pointer){
+            if(pointer->value > query){
+                tail_pointer = pointer;
+                pointer = pointer->lchild;
+            }else if(pointer->value < query){
+                tail_pointer = pointer;
+                pointer = pointer->rchild;
+            }else{
+                if(pointer->lchild){
+                    Node<T> *left_nearest = find_left_nearest(pointer->lchild);
+                    this->delete_node(left_nearest->value);
+                    pointer->value = left_nearest->value;
+                    pointer->height = NodeHeight(pointer);
+                    return;
+                }else if(pointer->rchild){
+                    Node<T> *right_nearest = find_right_nearest(pointer->rchild);
+                    this->delete_node(right_nearest->value);
+                    pointer->value = right_nearest->value;
+                    pointer->height = NodeHeight(pointer);
+                    return;
+                }else{
+                    if(tail_pointer){
+                        if(pointer == (tail_pointer->lchild)){
+                            tail_pointer->lchild = NULL;
+                        }else{
+                            tail_pointer->rchild = NULL;
+                        }
+                    }else{
+                        root = NULL;
+                        return;
+                    }
+
+                    tail_pointer->height = NodeHeight(tail_pointer);
+
+                    if(BalanceFactor(tail_pointer) == 2 && BalanceFactor(tail_pointer->lchild) == 1){
+                        cout<<"L 1" <<endl;
+                        LLRotation(tail_pointer);
+                    }else if(BalanceFactor(tail_pointer) == 2 && BalanceFactor(tail_pointer->lchild) == -1){
+                        cout<<"L -1" <<endl;
+                        LRRotation(tail_pointer);
+                    }else if(BalanceFactor(tail_pointer) == 2 && BalanceFactor(tail_pointer->lchild) == 0){
+                        cout<<"L 0" <<endl;
+                        LLRotation(tail_pointer);
+                    }else if(BalanceFactor(tail_pointer) == -2 && BalanceFactor(tail_pointer->rchild) == -1){
+                        cout<<"R 1" <<endl;
+                        RRRotation(tail_pointer);
+                    }else if(BalanceFactor(tail_pointer) == -2 && BalanceFactor(tail_pointer->rchild) == 1){
+                        cout<<"R -1" <<endl;
+                        RLRotation(tail_pointer);
+                    }else if(BalanceFactor(tail_pointer) == -2 && BalanceFactor(tail_pointer->rchild) == 0){
+                        cout<<"R 0" <<endl;
+                        RRRotation(tail_pointer);
+                    }
+
+                    return;
+
+                }
+            }
+        }
 }
 
 template <class T>
@@ -181,9 +261,10 @@ int main(){
     cout << endl << "inorder traversal" << endl;
     inorder(tree->root);
 
-    // cout.setf(ios::boolalpha);
-    // cout << endl << "deleting node with value 33" << endl;
-    // cout << endl << "inorder traversal after deleteing node 33" << endl;
-    // inorder(tree->root);
+    cout.setf(ios::boolalpha);
+    cout << endl << "deleting node with value 40" << endl;
+    tree->delete_node(40);
+    cout << endl << "inorder traversal after deleteing node 40" << endl;
+    inorder(tree->root);
 
 }
