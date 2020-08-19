@@ -133,15 +133,125 @@ void RedBlackTree<T>::add_node(Node<T> *grand_parent,Node<T> *parent,Node<T> *no
 }
 
 template <class T>
-void delete_node(T query){
- return;   
+char get_red_sibling_dir(Node<T> *pointer,char direction){
+    if(direction == 'L'){
+        if(pointer->lchild && pointer->lchild->color == 'R'){
+            return 'L';
+        }else if(pointer->rchild && pointer->rchild->color == 'R'){
+            return 'R';
+        }
+        return 'B';
+    }else{
+        if(pointer->rchild && pointer->rchild->color == 'R'){
+            return 'R';
+        }else if(pointer->lchild && pointer->lchild->color == 'R'){
+            return 'L';
+        }
+        return 'B';
+    }
+}
+
+// left nearest neighbor of node
+template <class T>
+Node<T> * find_left_nearest(Node<T> * pointer){
+    while(pointer->rchild){
+        pointer = pointer->rchild;
+    }
+    return pointer;
+}
+
+// right nearest neighbor of node
+template <class T>
+Node<T> * find_right_nearest(Node<T> * pointer){
+    while(pointer->lchild){
+        pointer = pointer->lchild;
+    }
+    return pointer;
+}
+
+template <class T>
+void RedBlackTree<T>::delete_node(T query){
+    Node<T> *tail_pointer = NULL;
+    Node<T> *pointer = root;
+
+    while(pointer){
+        
+        if(pointer->value > query){
+            tail_pointer = pointer;
+            pointer = pointer->lchild;
+        }else if(pointer->value < query){
+            tail_pointer = pointer;
+            pointer = pointer->rchild;
+        }else{
+            if(pointer->lchild){
+                Node<T> *left_nearest = find_left_nearest(pointer->lchild);
+                this->delete_node(left_nearest->value);
+                pointer->value = left_nearest->value;
+                return;
+            }else if(pointer->rchild){
+                Node<T> *right_nearest = find_right_nearest(pointer->rchild);
+                this->delete_node(right_nearest->value);
+                pointer->value = right_nearest->value;
+                return;
+            }else{
+                if(pointer == root){
+                    root = NULL;
+                    return;
+                }else{
+                    if(pointer->color == 'R'){
+                        if(tail_pointer->lchild == pointer){
+                            tail_pointer->lchild = NULL;
+                        }else{
+                            tail_pointer->rchild = NULL;
+                        }
+                        return;
+                    }else{
+                        Node<T> *sibling = tail_pointer->lchild == pointer?tail_pointer->rchild:tail_pointer->lchild;
+                        
+                        char sibling_dir = tail_pointer->lchild == pointer?'R':'L';
+                        
+                        //node deletion
+                        if(tail_pointer->lchild == pointer){
+                            tail_pointer->lchild = NULL;
+                        }else{
+                            tail_pointer->rchild = NULL;
+                        }
+
+                        if(sibling && sibling->color == 'R'){
+                            zig_zig_rotation(tail_pointer,sibling_dir);
+                            return;
+                        }else if(!sibling){
+                            tail_pointer->color = 'B';
+                            return;
+                        }else if(sibling->color == 'B'){
+                            
+                            char sibling_child_dir = get_red_sibling_dir(sibling,sibling_dir);
+                            if(sibling_child_dir == 'B'){
+                                sibling->color = 'R';
+                                tail_pointer->color = 'B';
+                                return;
+                            }else{
+                                if(sibling_dir == sibling_child_dir){
+                                    zig_zig_rotation(tail_pointer,sibling_dir);
+                                    return;
+                                }else{
+                                    zig_zag_rotation(tail_pointer,sibling_dir);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 template <class T>
 void inorder(Node<T> *pointer){
     if(pointer){
         inorder(pointer->lchild);
-        cout << pointer->value << " ";
+        cout << pointer->value << pointer->color << " ";
         inorder(pointer->rchild);   
     }
 }
@@ -165,5 +275,12 @@ int main(){
 
     cout << endl << "inorder traversal of tree" << endl;
     inorder(tree->root);
+
+    int delarr[] = {100,110,80,120,90};
+    for(int i =0 ;i<5;i++){
+        tree->delete_node(delarr[i]);
+        cout << endl << "inorder traversal of tree after deleting "<<delarr[i] << endl;
+        inorder(tree->root);
+    }
 }
 
