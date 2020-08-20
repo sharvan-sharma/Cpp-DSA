@@ -11,7 +11,7 @@ int search(int arr[],int l,int v){
     return 0;
 }
 
-void minimum_spanning_tree(int arr[][4],int V,int E){
+void prims_minimum_spanning_tree(int arr[][4],int V,int E){
 
     int resarr[V-1][3];
     int resarr_length = 0;
@@ -89,7 +89,7 @@ void minimum_spanning_tree(int arr[][4],int V,int E){
 
     // printing minimum spanning tree
     for(int i = 0;i < V-1;i++){
-        cout << "u "<< resarr[i][0] << " v " << resarr[i][1] << " value " << resarr[i][2] << endl;
+        cout << "u: "<< resarr[i][0] << " v: " << resarr[i][1] << " cost: " << resarr[i][2] << endl;
     }
 }
 
@@ -100,7 +100,6 @@ int main(){
     cin >> V >> E;
 
     int arr[E][4];
-    int zero = 0;
 
     //edges
     // 1 2 10
@@ -114,6 +113,6 @@ int main(){
         arr[i][3] = 0;
     }
 
-    minimum_spanning_tree(arr,V,E);
+    prims_minimum_spanning_tree(arr,V,E);
 
 }
