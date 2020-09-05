@@ -25,7 +25,7 @@ void SegmentTree::create(int N,int arr[]){
     double logN_ceil = ceil(logN);
 
     int L,start;
-    L = pow(2.0,logN_ceil+1) - 1; 
+    L = pow(2.0,logN_ceil+1) - 1; //2^4
     start = pow(2.0,logN_ceil) - 1;
     this->tree = new Node[L];
     this->lazy = new Node[L];
